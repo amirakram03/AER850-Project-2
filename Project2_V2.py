@@ -1,6 +1,6 @@
 
 """
-Created on Thu Oct 30 17:55:24 2025
+Created on Thu Oct 30 17:56:15 2025
 
 @author: Amir Akram
 """
@@ -91,8 +91,8 @@ model = models.Sequential([
     layers.Conv2D(64, (3, 3), activation='relu'),
     layers.MaxPooling2D((2, 2)),
     
-    #layers.Conv2D(128, (3, 3), activation='relu'),
-    #layers.MaxPooling2D((2, 2)),
+    layers.Conv2D(128, (3, 3), activation='relu'),
+    layers.MaxPooling2D((2, 2)),
     
     # --- Flatten and Fully Connected Layers ---
     layers.Flatten(),
@@ -114,7 +114,7 @@ model.summary()
 # Train Model
 history=model.fit(
     train_data,               # Training data
-    epochs=10,                # Number of training epochs
+    epochs=20,                # Number of training epochs
     validation_data=validation_data  
 )
 
