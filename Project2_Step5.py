@@ -1,6 +1,6 @@
 
 """
-Created on Thu Oct 30 17:55:24 2025
+Created on Thu Oct 30 17:56:15 2025
 
 @author: Amir Akram
 """
@@ -9,9 +9,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import datasets, layers, models
-from tensorflow.keras.utils import image_dataset_from_directory
 import matplotlib.pyplot as plt
-from pathlib import Path
+
 
 # For reproducibility
 np.random.seed(42)
@@ -91,12 +90,12 @@ model = models.Sequential([
     layers.Conv2D(64, (3, 3), activation='relu'),
     layers.MaxPooling2D((2, 2)),
     
-    #layers.Conv2D(128, (3, 3), activation='relu'),
-    #layers.MaxPooling2D((2, 2)),
+    layers.Conv2D(128, (3, 3), activation='relu'),
+    layers.MaxPooling2D((2, 2)),
     
     # --- Flatten and Fully Connected Layers ---
     layers.Flatten(),
-    layers.Dense(128, activation='relu'),
+    layers.Dense(256, activation='relu'),
 
     # --- Dropout Layer ---
     layers.Dropout(0.3),   # randomly disables 30% of neurons during training
@@ -140,7 +139,7 @@ plt.title('Model Loss')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
 plt.legend()
-#plt.ylim(0, 1)
+plt.ylim(0, 1)
 plt.show()
 
 # Evaluate the model on unseen test data
