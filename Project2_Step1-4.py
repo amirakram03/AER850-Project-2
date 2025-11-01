@@ -23,7 +23,7 @@ val_data_dir = "./Project 2 Data/valid"
 test_data_dir = "./Project 2 Data/test" 
 
 #Define Image Shape
-image_shape=(100,100);
+image_shape=(500,500);
 
 #Epochs
 epochs=20;
@@ -34,7 +34,6 @@ train_data = tf.keras.utils.image_dataset_from_directory(
     batch_size=32,
     shuffle=True,
     image_size = image_shape,    
-
     color_mode='grayscale'
 )
 
@@ -89,12 +88,10 @@ print("Classes:", class_names)
 # Define CNN architecture
 model = models.Sequential([
     # --- Convolution + Pooling Layers ---
-    layers.Conv2D(32, (3, 3), activation='relu', input_shape=(100, 100, 1)),
-    layers.BatchNormalization(),
+    layers.Conv2D(32, (3, 3), activation='relu', input_shape=(500, 500, 1)),
     layers.MaxPooling2D((2, 2)),
 
     layers.Conv2D(64, (3, 3), activation='relu'),
-    layers.BatchNormalization(),
     layers.MaxPooling2D((2, 2)),
     
     # --- Flatten and Fully Connected Layers ---
@@ -102,14 +99,15 @@ model = models.Sequential([
     layers.Dense(128, activation='relu'),
 
     # --- Dropout Layer ---
-    layers.Dropout(0.2),   # randomly disables 30% of neurons during training
+    layers.Dropout(0.5),   # randomly disables 30% of neurons during training
     
     # --- Output Layer ---
     layers.Dense(3, activation='softmax')  # 3 classes
 ])
 
 # Compile Model 1
-model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),loss='categorical_crossentropy',metrics=['accuracy'])
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),loss='categorical_crossentropy',metrics=['accuracy'])
+
 
 # Print model 1 summary 
 model.summary()
@@ -118,7 +116,7 @@ model.summary()
 history=model.fit(
     train_data,               # Training data
     epochs=epochs,                # Number of training epochs
-    validation_data=validation_data  
+    validation_data=validation_data,
 )
 
 # ------------ Model 2 ------------
@@ -126,31 +124,31 @@ history=model.fit(
 # Define CNN architecture
 model2 = models.Sequential([
     # --- Convolution + Pooling Layers ---
-    layers.Conv2D(32, (3, 3), activation='relu', input_shape=(100, 100, 1)),
-    layers.BatchNormalization(),
+    layers.Conv2D(16, (3, 3), activation='relu', input_shape=(500, 500, 1)),
     layers.MaxPooling2D((2, 2)),
 
+    layers.Conv2D(32, (3, 3), activation='relu'),
+    layers.MaxPooling2D((2, 2)),
+    
     layers.Conv2D(64, (3, 3), activation='relu'),
-    layers.BatchNormalization(),
     layers.MaxPooling2D((2, 2)),
     
     layers.Conv2D(128, (3, 3), activation='relu'),
-    layers.BatchNormalization(),
     layers.MaxPooling2D((2, 2)),
     
     # --- Flatten and Fully Connected Layers ---
     layers.Flatten(),
-    layers.Dense(256, activation='relu'),
+    layers.Dense(265, activation='relu'),
 
     # --- Dropout Layer ---
-    layers.Dropout(0.2),   # randomly disables 30% of neurons during training
+    layers.Dropout(0.5),   # randomly disables 30% of neurons during training
     
     # --- Output Layer ---
     layers.Dense(3, activation='softmax')  # 3 classes
 ])
 
 # Compile Model 2
-model2.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),loss='categorical_crossentropy',metrics=['accuracy'])
+model2.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),loss='categorical_crossentropy',metrics=['accuracy'])
 
 # Print model 2 summary
 model2.summary()
@@ -159,7 +157,7 @@ model2.summary()
 history2=model2.fit(
     train_data,               # Training data
     epochs=epochs,                # Number of training epochs
-    validation_data=validation_data  
+    validation_data=validation_data,
 )
 
 
@@ -206,7 +204,9 @@ print(f"\nFinal Test Accuracy: {test_accuracy2:.4f}")
 print(f"Final Test Loss: {test_loss2:.4f}")
 
 
-
+#Saving Both Models
+model.save("modelx.keras")
+model2.save("model2x.keras")
 
 
 

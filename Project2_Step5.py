@@ -1,170 +1,51 @@
-
-"""
-Created on Thu Oct 30 17:56:15 2025
-
-@author: Amir Akram
-"""
-
 import numpy as np
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import datasets, layers, models
 import matplotlib.pyplot as plt
+from tensorflow import keras
+from tensorflow.keras.utils import load_img, img_to_array
 
+model_1   = keras.models.load_model("modelx.keras")
+model_2 = keras.models.load_model("model2x.keras")
 
-# For reproducibility
-np.random.seed(42)
-keras.utils.set_random_seed(42)
+class_names = ["crack", "missing-head", "paint-off"]
 
+img_paths = {
+    "paint-off":   "./Project 2 Data/test/paint-off/test_paintoff.jpg",
+    "missing-head":"./Project 2 Data/test/missing-head/test_missinghead.jpg",
+    "crack":       "./Project 2 Data/test/crack/test_crack.jpg",
+}
 
-"""Step 1: Data Processing"""
+image_shape = (500, 500)
 
-train_data_dir = "./Project 2 Data/train" 
-val_data_dir = "./Project 2 Data/valid" 
-test_data_dir = "./Project 2 Data/test" 
+def load_and_prep(img_path):
+    img = load_img(img_path, target_size=image_shape, color_mode="grayscale")
+    img = img_to_array(img) / 255.0
+    return np.expand_dims(img, axis=0)
 
-#Define Image Shape
-image_shape=(500,500);
+def predict(model, img_path):
+    return model.predict(load_and_prep(img_path))[0]
 
-train_data = tf.keras.utils.image_dataset_from_directory(
-    train_data_dir,              # Image Directory
-    label_mode='categorical',         
-    batch_size=32,
-    image_size = image_shape,    
-    shuffle=True,
-    color_mode='grayscale'
-)
+def show_row(model, row, title):
+    for i, cls in enumerate(["paint-off", "missing-head", "crack"]):
+        ax = plt.subplot(2, 3, row*3 + i + 1)
+        img = load_img(img_paths[cls], color_mode="grayscale")
+        ax.imshow(img, cmap='gray')
+        ax.set_title(f"{title} — {cls}", fontsize=20,fontweight='bold')
+        ax.axis('off')
 
-# Load validation images
-validation_data = tf.keras.utils.image_dataset_from_directory(
-    val_data_dir,
-    label_mode='categorical',
-    batch_size=32,
-    image_size = image_shape,
-    shuffle=False,
-    color_mode='grayscale'
-)
+        probs = predict(model, img_paths[cls])
+        pred = class_names[np.argmax(probs)]
 
-# Load test images
-test_data = tf.keras.utils.image_dataset_from_directory(
-    test_data_dir,
-    label_mode='categorical',
-    batch_size=32,
-    image_size = image_shape,
-    shuffle=False,
-    color_mode='grayscale'
-)
+        info = "\n".join([
+            f"{name}: {p*100:.2f}%" for name, p in zip(class_names, probs)
+        ] + [f"Predicted: {pred}", f"True: {cls}"])
 
-# Data preprocessing
-# --------------------------
-# Normalize pixel values to [0,1]
-rescale = layers.Rescaling(1./255)
-class_names = train_data.class_names
+        ax.text(0.02, 0.02, info, transform=ax.transAxes,
+        va='bottom', ha='left',
+        fontsize=20, color='black',
+        bbox=dict(boxstyle="round,pad=0.4", fc=(0, 1, 0, 0.3), ec='none'))
 
-# Data augmentation (ONLY to training data)
-data_augmentation = keras.Sequential([
-    layers.Rescaling(1./255),
-    layers.RandomZoom(0.2),
-    layers.RandomRotation(0.1),
-])
-
-# Apply augmentation to training data
-train_data = train_data.map(lambda x, y: (data_augmentation(x), y))
-
-# Apply only rescaling to validation and test data
-validation_data = validation_data.map(lambda x, y: (rescale(x), y))
-test_data = test_data.map(lambda x, y: (rescale(x), y))
-
-
-print("Data processing complete.")
-print("Classes:", class_names)
-
-"""Step 2: Neural Network Architecture and Step 3: Hyperparameter Analysis"""
-
-# Define CNN architecture
-model = models.Sequential([
-    # --- Convolution + Pooling Layers ---
-    layers.Conv2D(32, (3, 3), activation='relu', input_shape=(500, 500, 1)),
-    layers.MaxPooling2D((2, 2)),
-
-    layers.Conv2D(64, (3, 3), activation='relu'),
-    layers.MaxPooling2D((2, 2)),
-    
-    layers.Conv2D(128, (3, 3), activation='relu'),
-    layers.MaxPooling2D((2, 2)),
-    
-    # --- Flatten and Fully Connected Layers ---
-    layers.Flatten(),
-    layers.Dense(256, activation='relu'),
-
-    # --- Dropout Layer ---
-    layers.Dropout(0.3),   # randomly disables 30% of neurons during training
-    
-    # --- Output Layer ---
-    layers.Dense(3, activation='softmax')  # 3 classes
-])
-
-# Compile Model
-model.compile(optimizer='adam',loss='categorical_crossentropy',metrics=['accuracy'])
-
-# Print model summary
-model.summary()
-
-# Train Model
-history=model.fit(
-    train_data,               # Training data
-    epochs=10,                # Number of training epochs
-    validation_data=validation_data  
-)
-
-"""Step 4: Model Evaluation"""
-
-# Plot training and validation accuracy & loss
-plt.figure(figsize=(10,4))
-
-# Accuracy plot
-plt.subplot(1,2,1)
-plt.plot(history.history['accuracy'], label='Training Accuracy')
-plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
-plt.title('Model Accuracy')
-plt.xlabel('Epoch')
-plt.ylabel('Accuracy')
-plt.legend()
-
-# Loss plot
-plt.subplot(1,2,2)
-plt.plot(history.history['loss'], label='Training Loss')
-plt.plot(history.history['val_loss'], label='Validation Loss')
-plt.title('Model Loss')
-plt.xlabel('Epoch')
-plt.ylabel('Loss')
-plt.legend()
-plt.ylim(0, 1)
+plt.figure(figsize=(15, 9))
+show_row(model_1, 0, "Model 1")
+show_row(model_2,   1, "Model 2")
+plt.tight_layout()
 plt.show()
-
-# Evaluate the model on unseen test data
-test_loss, test_accuracy = model.evaluate(test_data)
-
-print(f"\nFinal Test Accuracy: {test_accuracy:.4f}")
-print(f"Final Test Loss: {test_loss:.4f}")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
