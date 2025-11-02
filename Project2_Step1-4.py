@@ -8,7 +8,7 @@ Created on Thu Oct 30 17:55:24 2025
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import datasets, layers, models
+from tensorflow.keras import layers, models
 import matplotlib.pyplot as plt
 
 # For reproducibility
@@ -17,7 +17,7 @@ keras.utils.set_random_seed(42)
 
 
 """Step 1: Data Processing"""
-
+# Define directories for training, validation, and test datasets
 train_data_dir = "./Project 2 Data/train" 
 val_data_dir = "./Project 2 Data/valid" 
 test_data_dir = "./Project 2 Data/test" 
@@ -25,16 +25,17 @@ test_data_dir = "./Project 2 Data/test"
 #Define Image Shape
 image_shape=(500,500);
 
-#Epochs
+#Number of epochs for training
 epochs=20;
 
+#Load training images and their labels
 train_data = tf.keras.utils.image_dataset_from_directory(
-    train_data_dir,              # Image Directory
+    train_data_dir,              # Path to training folder
     label_mode='categorical',         
-    batch_size=32,
-    shuffle=True,
-    image_size = image_shape,    
-    color_mode='grayscale'
+    batch_size=32,              # Number of images per batch
+    shuffle=True,               # Randomize image order
+    image_size = image_shape,   # Resize all images to this size
+    color_mode='rgb'      # Convert to grayscale
 )
 
 # Load validation images
@@ -42,9 +43,9 @@ validation_data = tf.keras.utils.image_dataset_from_directory(
     val_data_dir,
     label_mode='categorical',
     batch_size=32,
-    shuffle=False,
+    shuffle=False,              # No shuffle needed for validation
     image_size = image_shape,
-    color_mode='grayscale'
+    color_mode='rgb'
 )
 
 # Load test images
@@ -52,9 +53,9 @@ test_data = tf.keras.utils.image_dataset_from_directory(
     test_data_dir,
     label_mode='categorical',
     batch_size=32,
-    shuffle=False,
+    shuffle=False,              # No shuffle needed for test
     image_size = image_shape,
-    color_mode='grayscale'
+    color_mode='rgb'
 )
 
 # Data preprocessing
@@ -94,14 +95,14 @@ model = models.Sequential([
     layers.Conv2D(64, (3, 3), activation='relu'),
     layers.MaxPooling2D((2, 2)),
     
-    # --- Flatten and Fully Connected Layers ---
+    # --- Flatten and Dense Layers ---
     layers.Flatten(),
     layers.Dense(128, activation='relu'),
 
-    # --- Dropout Layer ---
-    layers.Dropout(0.5),   # randomly disables 30% of neurons during training
+    # --- Dropout Layer to reduce overfitting ---
+    layers.Dropout(0.5),   # randomly disables 50% of neurons during training
     
-    # --- Output Layer ---
+    # --- Output layer for 3 classes ---
     layers.Dense(3, activation='softmax')  # 3 classes
 ])
 
@@ -136,14 +137,14 @@ model2 = models.Sequential([
     layers.Conv2D(128, (3, 3), activation='relu'),
     layers.MaxPooling2D((2, 2)),
     
-    # --- Flatten and Fully Connected Layers ---
+    # --- Flatten and Dense Layers ---
     layers.Flatten(),
-    layers.Dense(265, activation='relu'),
+    layers.Dense(256, activation='relu'),
 
-    # --- Dropout Layer ---
-    layers.Dropout(0.5),   # randomly disables 30% of neurons during training
+     # --- Dropout Layer to reduce overfitting ---
+    layers.Dropout(0.5),   # randomly disables 50% of neurons during training
     
-    # --- Output Layer ---
+    # --- Output layer for 3 classes ---
     layers.Dense(3, activation='softmax')  # 3 classes
 ])
 
@@ -184,29 +185,29 @@ def plot_history(history, title_prefix="Model"):
     plt.tight_layout()
     plt.show()
 
-
+# Plotting models
 plot_history(history, "Model 1")
 plot_history(history2, "Model 2")
 
 # ------------ Model Evaluation ------------
 
-# Evaluate the model #1 on unseen test data
+# Evaluate model #1 on unseen test data
 test_loss, test_accuracy = model.evaluate(test_data)
 
-print(f"\nFinal Test Accuracy: {test_accuracy:.4f}")
-print(f"Final Test Loss: {test_loss:.4f}")
+print(f"\nModel 1 Final Test Accuracy: {test_accuracy:.4f}")
+print(f"Model 1 Final Test Loss: {test_loss:.4f}")
 
 
-# Evaluate the model #2 on unseen test data
+# Evaluate model #2 on unseen test data
 test_loss2, test_accuracy2 = model2.evaluate(test_data)
 
-print(f"\nFinal Test Accuracy: {test_accuracy2:.4f}")
-print(f"Final Test Loss: {test_loss2:.4f}")
+print(f"\nModel 2 Final Test Accuracy: {test_accuracy2:.4f}")
+print(f"Model 2 Final Test Loss: {test_loss2:.4f}")
 
 
 #Saving Both Models
-model.save("modelx.keras")
-model2.save("model2x.keras")
+model.save("model1.keras")
+model2.save("model2.keras")
 
 
 
