@@ -35,7 +35,7 @@ train_data = tf.keras.utils.image_dataset_from_directory(
     batch_size=32,              # Number of images per batch
     shuffle=True,               # Randomize image order
     image_size = image_shape,   # Resize all images to this size
-    color_mode='rgb'      # Convert to grayscale
+    color_mode='grayscale'      # Convert to grayscale
 )
 
 # Load validation images
@@ -45,7 +45,7 @@ validation_data = tf.keras.utils.image_dataset_from_directory(
     batch_size=32,
     shuffle=False,              # No shuffle needed for validation
     image_size = image_shape,
-    color_mode='rgb'
+    color_mode='grayscale'
 )
 
 # Load test images
@@ -55,7 +55,7 @@ test_data = tf.keras.utils.image_dataset_from_directory(
     batch_size=32,
     shuffle=False,              # No shuffle needed for test
     image_size = image_shape,
-    color_mode='rgb'
+    color_mode='grayscale'
 )
 
 # Data preprocessing
