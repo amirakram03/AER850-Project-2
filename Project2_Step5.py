@@ -7,8 +7,8 @@ from tensorflow.keras.utils import load_img, img_to_array
 """Step 5: Model Testing"""
 
 # Load the trained models from saved files
-model_1   = keras.models.load_model("model1(500,500).keras") # Load Model 1
-model_2 = keras.models.load_model("model2(500,500).keras")  # Load Model 2
+model_1   = keras.models.load_model("model1.keras") # Load Model 1
+model_2 = keras.models.load_model("model2.keras")  # Load Model 2
 
 # Define the class label
 class_names = ["crack", "missing-head", "paint-off"]

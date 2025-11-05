@@ -91,7 +91,7 @@ model = models.Sequential([
     # --- Convolution + Pooling Layers ---
     layers.Conv2D(32, (3, 3), activation='relu', input_shape=(500, 500, 1)),
     layers.MaxPooling2D((2, 2)),
-
+    
     layers.Conv2D(64, (3, 3), activation='relu'),
     layers.MaxPooling2D((2, 2)),
     
@@ -99,7 +99,7 @@ model = models.Sequential([
     layers.Flatten(),
     layers.Dense(128, activation='relu'),
 
-    # --- Dropout Layer to reduce overfitting ---
+     # --- Dropout Layer to reduce overfitting ---
     layers.Dropout(0.5),   # randomly disables 50% of neurons during training
     
     # --- Output layer for 3 classes ---
