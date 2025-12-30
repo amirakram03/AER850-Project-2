@@ -1,5 +1,5 @@
-Project Title:
-Aircraft Surface Defect Classification Using Deep Convolutional Neural Networks
+#Project Title:
+#Aircraft Surface Defect Classification Using Deep Convolutional Neural Networks
 
 Overview:
 This project focuses on automating aircraft surface inspection using deep learning.
